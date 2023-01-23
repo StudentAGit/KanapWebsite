@@ -18,7 +18,7 @@ fetch ("http://localhost:3000/api/products")
 
 
   
-   // Afficher les éléments parents/enfants pour les détails de chaque canapée (autant qu'il y a de canapés à afficher)
+   // Afficher les éléments parents/enfants pour les détails de chaque canapé (autant qu'il y a de canapés à afficher)
     let eltItems = document.getElementById("items");
     for (let kanap of kanaps){
       let eltA = document.createElement("a")

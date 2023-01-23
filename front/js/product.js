@@ -1,7 +1,21 @@
 let params = (new URL(document.location)).searchParams;
 let id = params.get('id');
 
-
+// va permettre de rajouter dans le panier sans écrasement et sans multiplication du meme article (avec une function )
+function addToCart(cart,item){  //item c'est un nouveau truc et element c'est un truc déja présent
+  console.log(item,cart) 
+  let foundSomething = false //varaiable crée s'il y a rien dans le panier (rien trouvé dans le panier) donnée boléenne
+  for (let element of cart){ // pour tous les éléments du panier
+    if (item.id === element.id && item.color === element.color ){ //===->"identique"
+      element.qty += item.qty
+      foundSomething = true
+    }
+  }
+  if (foundSomething === false) { // (!foundSomething) s'il n'y avait jamais rien eu dans le panier
+    cart.push(item) //item (nouvel objet) se rajoute au panier
+  }
+  return cart // met fin à la fonction et retourne le nouveau tableau = (mise à jour du panier)
+}
 
 fetch ("http://localhost:3000/api/products/"+id)
 .then(function(res) {
@@ -55,25 +69,6 @@ fetch ("http://localhost:3000/api/products/"+id)
  //if (qtyProduct.value == 0){
  //alert("Veuillez choisir une quantité")
  //}
-
- 
-
- //-------------------------------------PARTIE AJOUT AU PANIER------------------------------------------------
-// va permettre de rajouter dans le panier sans écrasement et sans multiplication du meme article (avec une function )
-function addToCart(cart,item){  //item c'est un nouveau truc et element c'est un truc déja présent
-  console.log(item,cart) 
-  let foundSomething = false //varaiable crée s'il y a rien dans le panier (rien trouvé dans le panier) donnée boléenne
-  for (let element of cart){ // pour tous les éléments du panier
-    if (item.id === element.id && item.color === element.color ){ //===->"identique"
-      element.qty += item.qty
-      foundSomething = true
-    }
-  }
-  if (foundSomething === false) { // (!foundSomething) s'il n'y avait jamais rien eu dans le panier
-    cart.push(item) //item (nouvel objet) se rajoute au panier
-  }
-  return cart // met fin à la fonction et retourne le nouveau tableau = (mise à jour du panier)
-}
 
 //--------------------------------------PARTIE AJOUT AU LOCAL STORAGE-------------------------------------------
 let tableauLocalStorage = []
