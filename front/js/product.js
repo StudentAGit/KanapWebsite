@@ -27,7 +27,6 @@ fetch ("http://localhost:3000/api/products/"+id)
 .then(function(eachProducts) {
  console.log(eachProducts)
 
- //le [0] sert à indiquer qu'il plusieurs truc à indiquer car getElements avec un s
   let productImage = document.getElementsByClassName("item__img")[0];
   productImage.innerHTML = `<img src="${eachProducts.imageUrl}" alt="${eachProducts.altTxt}">`;
 
@@ -65,19 +64,20 @@ fetch ("http://localhost:3000/api/products/"+id)
  let userChoiceOption = colorSelected.value; //Mettre le choix de l'utilisateur dans une variable
  console.log(userChoiceOption)
 
- //Petit test avec alert
- //if (qtyProduct.value == 0){
- //alert("Veuillez choisir une quantité")
- //}
+ if (qtyProduct.value > 1){
+  alert("Ces articles sont ajoutés à votre panier.")
+ }
+ else {
+  alert("Cet article est ajouté à votre panier.")
+ }
 
 //--------------------------------------PARTIE AJOUT AU LOCAL STORAGE-------------------------------------------
-let tableauLocalStorage = []
-if (localStorage.getItem("listeCanape")!== null) { //(!== -> "différent de")
-  //déja quelque chose dans localstorage
-  tableauLocalStorage = JSON.parse(localStorage.getItem('listeCanape')) //convertit du JSON en javascript
+let arrayLocalStorage = []
+if (localStorage.getItem("listCouch")!== null) { //(!== -> "différent de") si y'a déjà quelque chose dans localstorage
+  arrayLocalStorage = JSON.parse(localStorage.getItem("listCouch")) //convertit du JSON en javascript
 } 
-  tableauLocalStorage = addToCart(tableauLocalStorage,{id:id,qty:parseInt(document.querySelector("input").value),color:userChoiceOption})
-  localStorage.setItem("listeCanape",JSON.stringify(tableauLocalStorage)) //convertit une valeur javascript en chaine JSON.
+  arrayLocalStorage = addToCart(arrayLocalStorage,{id:id,color:userChoiceOption,qty:parseInt(document.querySelector("input").value)})
+  localStorage.setItem("listCouch",JSON.stringify(arrayLocalStorage)) //convertit une valeur javascript en chaine JSON.
   
 })
 
