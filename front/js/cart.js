@@ -13,31 +13,34 @@ let arrayLocalStorage = []
 
 
 function totalCart (){
- 
+ console.log("test",arrayLocalStorage)
   //-------------------------------RECUPERER LE NOMBRE TOTAL D'ARTICLES DU PANIER----------------------------------------
   let numberTotalOfCart = [];
   for (let m = 0; m < arrayLocalStorage.length; m++){
     let numberInCart = arrayLocalStorage[m].qty;
     numberTotalOfCart.push(numberInCart)
   }
-  //console.log(numberTotalOfCart);
+  console.log(numberTotalOfCart);
   //--------------------------------RECUPERER TOUS LES PRIX D'ARTICLES DU PANIER---------------------------------------
   let priceTotalOfCart = [];
     for (let p = 0; p < arrayLocalStorage.length; p++){
       let priceInCart = arrayLocalStorage[p].price;
-      // console.log(priceInCart);
       priceTotalOfCart.push(priceInCart)
-      //console.log(priceTotalOfCart);
+      console.log(priceTotalOfCart);
     }  
   //----------------ADDITIONNER LES ARTICLES DU PANIER AVEC LA METHODE reduce ---------------------------------------------
   const reducer = (accumulator, currentValue) => accumulator + currentValue;
-  const totalArticle = numberTotalOfCart.reduce(reducer,0);
-  //console.log(totalArticle);
+  let totalArticle = numberTotalOfCart.reduce(reducer,0);
+  console.log(totalArticle);
 
   // -----------------------------------ADDITIONER TOUS LES PRIX DU PANIER--------------------------------------------
   const priceReducer = (priceAccumulator, priceCurrentValue) => priceAccumulator + priceCurrentValue;
-  const totalPrice = priceTotalOfCart.reduce(priceReducer,0)
+  let totalPrice = priceTotalOfCart.reduce(priceReducer,0)
   
+  if (numberTotalOfCart.length == 0){
+    totalArticle = 0
+    totalPrice = 0
+  }
 
   let finalQuantity = document.getElementById("totalQuantity");
   //  finalsDetails.innerHTML = `<p>Total (<span id="totalQuantity">${totalArticle}</span> articles) : <span id="totalPrice">${totalPrice}</span> €</p>`
@@ -47,9 +50,10 @@ function totalCart (){
   let price = 0
   for (let couch of arrayLocalStorage){ 
       price += couch.qty*couch.price
-      let finalPrice = document.getElementById("totalPrice");
-      finalPrice.innerHTML = price
+      
     }
+    let finalPrice = document.getElementById("totalPrice");
+      finalPrice.innerHTML = price
 }
 
 
@@ -107,21 +111,17 @@ async function itemInCart (){
 
       let updateQuantity = changeInput.addEventListener("change", (e)=> {
         e.preventDefault();
+        
          let newValue = document.querySelector(".itemQuantity").value;
         
          let finalQuantity = document.getElementById("totalQuantity");
          finalQuantity.innerHTML = newValue
-         let price = 0
-         price += newValue*kanap.price
-         let finalPrice = document.getElementById("totalPrice");
-         finalPrice.innerHTML = price
-           
-         let arrayLocalStorage = []
-        if (localStorage.getItem("listCouch")!== null) { //(!== -> "différent de")
-          //déja quelque chose dans localstorage
-          arrayLocalStorage = JSON.parse(localStorage.getItem("listCouch"))
+         
         
-        }
+        // let testing = arrayLocalStorage = arrayLocalStorage.filter(obj => obj.qty === newValue)
+        //   return false
+        
+        // console.log(testing);
          
         //  if (product.qty !== newValue){
         //   arrayLocalStorage = 
@@ -186,31 +186,7 @@ async function itemInCart (){
         arrayLocalStorage = arrayLocalStorage.filter(item => item.color !== el.dataset.color);
         localStorage.setItem("listCouch", JSON.stringify(arrayLocalStorage))
         totalCart();
-        //pourquoi le prix ne se retir pas sachant que je refais appelle à la fonction qui permet d'afficher le total pour
-        //le panier après la remise dans le localstorage ???
      });
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     //     // let testsupression = arrayLocalStorage.splice(0,1);
-     //     // console.log(testsupression); //affiche les éléments supprimer
-     //     // console.log(arrayLocalStorage); //affiche le nouveau tableu
-     //   //  let deleteStorage = arrayLocalStorage.filter(item => item.id !== el.dataset.id && item.color !== el.dataset.color)
-     //   //  arrayLocalStorage = deleteStorage (arrayLocalStorage,{})
-     //   //  localStorage.setItem("listCouch",JSON.stringify(arrayLocalStorage))
      totalCart();
 
 
@@ -323,11 +299,19 @@ return false;
         localStorage.setItem("userinformations", JSON.stringify(userinformations))
         
         
-        
-    
+        let tabIdCouch = []
+        for(let test of arrayLocalStorage){
+          tabIdCouch.push(test.id)
+        }
+
+        // if (tabIdCouch.length > 1){
+
+        // }
+     
+        // console.log(tabIdCouch);
         let finalcommand = {
           
-          products: ["107fb5b75607497b96722bda5b504926"],
+          products: [tabIdCouch],
           contact : userinformations
         }
     
@@ -339,20 +323,20 @@ return false;
     
       
     
-        methodPost.then(function(id) {
-          if (id.ok) {
-            return id.json();
-            console.log(id)
+        methodPost.then(function(res) {
+          if (res.ok) {
+            return res.json();
           }
         
         })
 
-        fetch ("http://localhost:3000/api/products/order"+ orderId)
-        .then(function(res) {
-          if (res.ok) {
-            return res.json();
-          }
+        .then (function(command){
+          console.log(command)
+          console.log(location)
+          window.location.href = "http://127.0.0.1:5500/front/html/confirmation.html?orderId=" + command.orderId;
         })
+
+
        
       }
     
