@@ -1,75 +1,79 @@
 let arrayLocalStorage = []
-  if (localStorage.getItem("listCouch")!== null) { //(!== -> "différent de")
-        //déja quelque chose dans localstorage
-        arrayLocalStorage = JSON.parse(localStorage.getItem("listCouch"))
-        
-  }
-  else {
-    totalCart();
-  }
+if (localStorage.getItem("listCouch")!== null) { //(!== -> "différent de")
+      //déja quelque chose dans localstorage
+      arrayLocalStorage = JSON.parse(localStorage.getItem("listCouch"))
+      
+}
 
 
+ 
+function displayCartItem (){
 
-
-
-function totalCart (){
- console.log("test",arrayLocalStorage)
+ 
+  console.log(arrayLocalStorage); //tableau avec le prix
+  console.log(localStorage); //localstorage sans le prix
   //-------------------------------RECUPERER LE NOMBRE TOTAL D'ARTICLES DU PANIER----------------------------------------
   let numberTotalOfCart = [];
-  for (let m = 0; m < arrayLocalStorage.length; m++){
-    let numberInCart = arrayLocalStorage[m].qty;
+  for (let nbr of arrayLocalStorage){
+    let numberInCart = nbr.qty;
     numberTotalOfCart.push(numberInCart)
   }
-  console.log(numberTotalOfCart);
+  // console.log(numberTotalOfCart);
   //--------------------------------RECUPERER TOUS LES PRIX D'ARTICLES DU PANIER---------------------------------------
   let priceTotalOfCart = [];
-    for (let p = 0; p < arrayLocalStorage.length; p++){
-      let priceInCart = arrayLocalStorage[p].price;
+    for (let prc of arrayLocalStorage){
+      let priceInCart = prc.price;
       priceTotalOfCart.push(priceInCart)
-      console.log(priceTotalOfCart);
-    }  
+    }
+  console.log(priceTotalOfCart);
+
+
   //----------------ADDITIONNER LES ARTICLES DU PANIER AVEC LA METHODE reduce ---------------------------------------------
-  const reducer = (accumulator, currentValue) => accumulator + currentValue;
+  const reducer = (accumulator, currentValue) => parseInt(accumulator) + parseInt(currentValue);
   let totalArticle = numberTotalOfCart.reduce(reducer,0);
   console.log(totalArticle);
 
   // -----------------------------------ADDITIONER TOUS LES PRIX DU PANIER--------------------------------------------
-  const priceReducer = (priceAccumulator, priceCurrentValue) => priceAccumulator + priceCurrentValue;
-  let totalPrice = priceTotalOfCart.reduce(priceReducer,0)
+  const priceReducer = (priceAccumulator, priceCurrentValue) => parseInt(priceAccumulator) + parseInt(priceCurrentValue);
+  let totalPrice = priceTotalOfCart.reduce(priceReducer,0);
+  console.log(totalPrice);
+
+
+  for (let bruh of arrayLocalStorage){
+    if (bruh.qty > 1 ){
+      totalPrice = bruh.qty *bruh.price
+    }
+  }
   
+ 
+  // console.log(price);
   if (numberTotalOfCart.length == 0){
     totalArticle = 0
     totalPrice = 0
   }
 
+  
+
   let finalQuantity = document.getElementById("totalQuantity");
-  //  finalsDetails.innerHTML = `<p>Total (<span id="totalQuantity">${totalArticle}</span> articles) : <span id="totalPrice">${totalPrice}</span> €</p>`
   finalQuantity.innerHTML = totalArticle
 
-  //multiplication des quantités et des prix du panier
-  let price = 0
-  for (let couch of arrayLocalStorage){ 
-      price += couch.qty*couch.price
-      
-    }
-    let finalPrice = document.getElementById("totalPrice");
-      finalPrice.innerHTML = price
-}
+  let finalPrice = document.getElementById("totalPrice");
+  finalPrice.innerHTML = totalPrice
+  }
 
 
-//  function deleteInStorage (cart, item){
- 
-//  }
- 
+
 
 
 
 
 itemInCart()
 async function itemInCart (){
+
+ displayCartItem();
   
 
-  let elementsInCart = document.getElementById("cart__items");
+ let elementsInCart = document.getElementById("cart__items");
   for (let product of arrayLocalStorage){ 
     await fetch (`http://localhost:3000/api/products/${product.id}`)
    .then(function(res) {
@@ -78,164 +82,97 @@ async function itemInCart (){
       }
     })
    .then((kanap) => {
-     product.price = kanap.price; //pour faire entrer kanap.price dans arrayLocalStorage sous forme de product.price
-     let divElement = document.createElement("div");
-     divElement.innerHTML +=
-       `<article class="cart__item" data-id="${product.id}" data-color="${product.color}">
-     <div class="cart__item__img">
-     <img src="${kanap.imageUrl}" alt="${kanap.altTxt}">
-                </div>
-                <div class="cart__item__content">
-                  <div class="cart__item__content__description">
-                    <h2>${kanap.name}</h2>
-                    <p>${product.color}</p>
-                    <p>${kanap.price}</p>
-                  </div>
-                  <div class="cart__item__content__settings">
-                    <div class="cart__item__content__settings__quantity">
-                      <p>Qté : </p>
-                      <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.qty}">
-                    </div>
-                    <div class="cart__item__content__settings__delete">
-                      <p class="deleteItem">Supprimer</p>
-                    </div>
-                  </div>
-                </div>
-                </article>`;
-     elementsInCart.appendChild(divElement);
+    product.price = kanap.price; //pour faire entrer kanap.price dans arrayLocalStorage sous forme de product.price
+    let divElement = document.createElement("div");
+    divElement.innerHTML +=
+      `<article class="cart__item" data-id="${product.id}" data-color="${product.color}">
+    <div class="cart__item__img">
+    <img src="${kanap.imageUrl}" alt="${kanap.altTxt}">
+               </div>
+               <div class="cart__item__content">
+                 <div class="cart__item__content__description">
+                   <h2>${kanap.name}</h2>
+                   <p>${product.color}</p>
+                   <p>${kanap.price}</p>
+                 </div>
+                 <div class="cart__item__content__settings">
+                   <div class="cart__item__content__settings__quantity">
+                     <p>Qté : </p>
+                     <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.qty}">
+                   </div>
+                   <div class="cart__item__content__settings__delete">
+                     <p class="deleteItem">Supprimer</p>
+                   </div>
+                 </div>
+               </div>
+               </article>`;
+    elementsInCart.appendChild(divElement);
 
-     let el = divElement.querySelector(".cart__item")
-     let canapId = el.dataset.id;
-     let canapColor = el.dataset.color;
-     let changeInput = divElement.querySelector(".itemQuantity");
+    let el = divElement.querySelector(".cart__item")
+    let canapId = el.dataset.id;
+    let canapColor = el.dataset.color;
 
-      let updateQuantity = changeInput.addEventListener("change", (e)=> {
-        e.preventDefault();
-        
-         let newValue = document.querySelector(".itemQuantity").value;
-        
-         let finalQuantity = document.getElementById("totalQuantity");
-         finalQuantity.innerHTML = newValue
-         
-        
-        // let testing = arrayLocalStorage = arrayLocalStorage.filter(obj => obj.qty === newValue)
-        //   return false
-        
-        // console.log(testing);
-         
-        //  if (product.qty !== newValue){
-        //   arrayLocalStorage = 
-          
-        //  }
+    let input = divElement.querySelector(".itemQuantity");
 
-
-        //  let testQuantity = arrayLocalStorage.filter(obj => obj.qty !== newValue)
-        //  console.log(testQuantity);
-        //  if (testQuantity = true){
-        //   arrayLocalStorage.push(newValue)
-        //  }
-        //  return arrayLocalStorage
-        // arrayLocalStorage = (arrayLocalStorage, {qty:parseInt(newValue)})
-        // localStorage.setItem("listCouch", JSON.stringify(arrayLocalStorage))
-        // totalCart();
-
-        
-
-        
-          // if (localStorage.getItem("listCouch")!== null) {
-          //  arrayLocalStorage = JSON.parse(localStorage.getItem("listCouch"))
-          //  }
-
-          // arrayLocalStorage.filter(test => test.qty != newValue); {
-          //   arrayLocalStorage.push(newValue)
-           
-          // }
-          
-          
-         
-
-         
-         
-         
-     //      let price = 0 
-     //      price += NewValue*couch.price
-     //      let finalPrice = document.getElementById("totalPrice");
-     //      finalPrice.innerHTML = price
-     //     
-     //       // if (test => test.id === el.dataset.id && test.color === el.dataset.color && test.qty !== NewValue){
-     //       //  return test = true
-     //       // }
-     //     //  if (test === true){
-     //     //     let arrayLocalStorage = []
-     //     //     if (localStorage.getItem("listCouch")!== null) { //(!== -> "différent de")
-     //     //       //déja quelque chose dans localstorage
-     //     //       arrayLocalStorage = JSON.parse(localStorage.getItem("listCouch"))
-     //     //     }
-     //     //    arrayLocalStorage = ({id:test.id,color:test.color,qty:parseInt(NewValue)})
-     //     //    localStorage.setItem("listCouch",JSON.stringify(arrayLocalStorage))
-     //     //   }  
-     //     // 
-        })  // console.log(updateLocal)
-      // }
-     let deleteBtn = divElement.querySelector(".deleteItem");
-     deleteBtn.addEventListener("click", (e) => {
-        e.preventDefault;
-
-        let el = divElement.querySelector(".cart__item");
-        el.remove();
-        arrayLocalStorage = arrayLocalStorage.filter(item => item.color !== el.dataset.color);
-        localStorage.setItem("listCouch", JSON.stringify(arrayLocalStorage))
-        totalCart();
-     });
-     totalCart();
-
-
-   })
- }  
+     let updateQuantity = input.addEventListener("change", (e)=> {
+      e.preventDefault();
+      let newValue = divElement.querySelector(".itemQuantity").value;
+      console.log(newValue);
+      let itemToUpdate = arrayLocalStorage.find(product => product.id === canapId && product.color === canapColor);
+      console.log(itemToUpdate);
+      itemToUpdate.qty = Number(newValue);
+     
+      let ItemToSave = JSON.stringify(itemToUpdate)
+      console.log(ItemToSave);
+      localStorage.setItem("listCouch",ItemToSave);
+      displayCartItem();
+     
+      // arrayLocalStorage = JSON.parse(localStorage.getItem("listCouch"));
+      // console.log(arrayLocalStorage);
       
       
       
+      // let test = arrayLocalStorage.find(product => product.id === canapId && product.color === canapColor);
+      // test.qty = newValue
+     //  doubler la ligne 127, modifier l'arraylocalstorage (qty) et localStorage
+    //  console.log(localStorage);
+    //  console.log(arrayLocalStorage);
+     //  console.log(itemToUpdate);
+      
+       // for (let item of arrayLocalStorage){
+       //   if (item.qty !== newValue){
+       //    item.qty = newValue
+        
+         //  let finalQuantity = document.getElementById("totalQuantity");
+         //  finalQuantity.innerHTML = newValue
+       //   }
+       // }
+      //  localStorage.setItem("listCouch",JSON.stringify(test));
+       displayCartItem();
+     })
+   
+     
+ 
+    let deleteBtn = divElement.querySelector(".deleteItem");
+    deleteBtn.addEventListener("click", (e) => {
+       e.preventDefault;
+       el.remove();
+       arrayLocalStorage = arrayLocalStorage.filter(item => item.color !== el.dataset.color);
+       localStorage.setItem("listCouch", JSON.stringify(arrayLocalStorage))
+       displayCartItem();
+      
+    });
+    displayCartItem();
+
+
+  })
+}  
+     
+     
+     
 }
 
-                  
-                    
-              
-
-                
-
-
-
-     
-  
-        
-        
-        
-        
-
-
-    
-
-    
-    
-         
-    
-    
-    
    
-    
-    //  changeQuantity();
-    //  removeProduct();  
-
-  
-
-
-
-
-
-
-
-
-
 //-----------------------------PARTIE DONNEES UTILISATEUR POUR LE FORMULAIRE------------------------------------
 function textControl(text){
   
@@ -289,10 +226,7 @@ return false;
     }
 
      
-    //  let divElement = document.createElement("div")
-    //  itemInCart (divElement);
-    //  let el = divElement.querySelector(".cart__item")
-    //  let canapId = el.dataset.id
+    
      //si le formulaire est bon, alors autorisation de mise du formulaire dans le local storage
      if (textControl(userinformations.firstName) === true && textControl(userinformations.lastName) === true && textControl(userinformations.city) === true && addressControl(userinformations.address) === true && 
         emailControl(userinformations.email) === true){
@@ -302,16 +236,15 @@ return false;
         let tabIdCouch = []
         for(let test of arrayLocalStorage){
           tabIdCouch.push(test.id)
+          console.log(test)
         }
 
-        // if (tabIdCouch.length > 1){
-
-        // }
+       
      
         // console.log(tabIdCouch);
         let finalcommand = {
           
-          products: [tabIdCouch],
+          products: tabIdCouch,
           contact : userinformations
         }
     
@@ -332,7 +265,6 @@ return false;
 
         .then (function(command){
           console.log(command)
-          console.log(location)
           window.location.href = "http://127.0.0.1:5500/front/html/confirmation.html?orderId=" + command.orderId;
         })
 
@@ -373,44 +305,7 @@ return false;
  
 
 
+//     {
+//     
 
-
-//test pour le formulaire 
-// Monnom
-// Monprenom
-// Maville
-// 12 rue Monadresse
-// example@gmail.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// stocker l'id dans l'url pour recuper sans local storage pour la page confirmation
-
-
-
-
-
-
-
-// let changeQuantity = document.querySelector("cart__item__content__settings__quantity input");
-// changeQuantity.addEventListener("change", function () {
-   
   
-//     console.log(changeQuantity.value);
-
-//   })
-
