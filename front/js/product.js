@@ -52,34 +52,34 @@ fetch ("http://localhost:3000/api/products/"+id)
  //avec addEventListener au clique du bouton  "ajouter au panier" 
  let btnSendToCart = document.querySelector("button");
 
- btnSendToCart.addEventListener("click", () =>{
- 
+ btnSendToCart.addEventListener("click", () =>{ 
+  
  let idOfProduct = id
  console.log(idOfProduct);
  
- let qtyProduct = document.querySelector("input[value = '0']");
- console.log(qtyProduct.value);
+ let qtyProduct = document.getElementById("quantity").value;
+ console.log(qtyProduct);
 
  let colorSelected = document.getElementById("colors");
  let userChoiceOption = colorSelected.value; //Mettre le choix de l'utilisateur dans une variable
  console.log(userChoiceOption)
 
- if (qtyProduct.value > 1){
-  alert("Ces articles sont ajoutés à votre panier.")
- }
- else {
-  alert("Cet article est ajouté à votre panier.")
- }
-
-//--------------------------------------PARTIE AJOUT AU LOCAL STORAGE-------------------------------------------
-let arrayLocalStorage = []
-if (localStorage.getItem("listCouch")!== null) { //(!== -> "différent de") si y'a déjà quelque chose dans localstorage
-  arrayLocalStorage = JSON.parse(localStorage.getItem("listCouch")) //convertit du JSON en javascript
-} 
-  arrayLocalStorage = addToCart(arrayLocalStorage,{id:id,color:userChoiceOption,qty:parseInt(document.querySelector("input").value)})
-  localStorage.setItem("listCouch",JSON.stringify(arrayLocalStorage)) //convertit une valeur javascript en chaine JSON.
+ 
+  if (qtyProduct <= 100 && qtyProduct >0){
+    let arrayProducts = []
+    if (localStorage.getItem("listCouch")!== null) { //(!== -> "différent de") si y'a déjà quelque chose dans localstorage
+      arrayProducts = JSON.parse(localStorage.getItem("listCouch")) //convertit du JSON en javascript
+    } 
+      arrayProducts = addToCart(arrayProducts,{id:id,color:userChoiceOption,qty:parseInt(qtyProduct)})
+      localStorage.setItem("listCouch",JSON.stringify(arrayProducts)) //convertit une valeur javascript en chaine JSON.
+  } else {
+   alert ("Veuillez choisir une quantité comprise entre 1 et 100")
+  }
   
-})
+
+
+ })
+
 
 
 

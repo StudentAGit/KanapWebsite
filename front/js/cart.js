@@ -1,177 +1,118 @@
-let arrayLocalStorage = []
-if (localStorage.getItem("listCouch")!== null) { //(!== -> "différent de")
-      //déja quelque chose dans localstorage
-      arrayLocalStorage = JSON.parse(localStorage.getItem("listCouch"))
-      
+let arrayProducts = [];
+if (localStorage.getItem("listCouch")!== null) {
+  arrayProducts = JSON.parse(localStorage.getItem("listCouch"))
 }
 
 
- 
-function displayCartItem (){
 
- 
-  console.log(arrayLocalStorage); //tableau avec le prix
-  console.log(localStorage); //localstorage sans le prix
-  //-------------------------------RECUPERER LE NOMBRE TOTAL D'ARTICLES DU PANIER----------------------------------------
+function totalQuantityAndPrice(){
   let numberTotalOfCart = [];
-  for (let nbr of arrayLocalStorage){
-    let numberInCart = nbr.qty;
+  for (let item of arrayProducts){
+    let numberInCart = item.qty;
     numberTotalOfCart.push(numberInCart)
   }
-  // console.log(numberTotalOfCart);
-  //--------------------------------RECUPERER TOUS LES PRIX D'ARTICLES DU PANIER---------------------------------------
-  let priceTotalOfCart = [];
-    for (let prc of arrayLocalStorage){
-      let priceInCart = prc.price;
-      priceTotalOfCart.push(priceInCart)
-    }
-  console.log(priceTotalOfCart);
+  console.log(numberTotalOfCart);
 
+  const calculQty = (accumulator, currentValue) => parseInt(accumulator) + parseInt(currentValue);
+  let totalArticle = numberTotalOfCart.reduce(calculQty,0);
 
-  //----------------ADDITIONNER LES ARTICLES DU PANIER AVEC LA METHODE reduce ---------------------------------------------
-  const reducer = (accumulator, currentValue) => parseInt(accumulator) + parseInt(currentValue);
-  let totalArticle = numberTotalOfCart.reduce(reducer,0);
-  console.log(totalArticle);
-
-  // -----------------------------------ADDITIONER TOUS LES PRIX DU PANIER--------------------------------------------
-  const priceReducer = (priceAccumulator, priceCurrentValue) => parseInt(priceAccumulator) + parseInt(priceCurrentValue);
-  let totalPrice = priceTotalOfCart.reduce(priceReducer,0);
-  console.log(totalPrice);
-
-
-  for (let bruh of arrayLocalStorage){
-    if (bruh.qty > 1 ){
-      totalPrice = bruh.qty *bruh.price
-    }
-  }
-  
- 
-  // console.log(price);
   if (numberTotalOfCart.length == 0){
     totalArticle = 0
-    totalPrice = 0
   }
-
-  
 
   let finalQuantity = document.getElementById("totalQuantity");
   finalQuantity.innerHTML = totalArticle
 
-  let finalPrice = document.getElementById("totalPrice");
-  finalPrice.innerHTML = totalPrice
-  }
+  let totalPrice = 0
+   for (let couch of arrayProducts){
+    totalPrice += couch.qty*couch.price
 
-
-
-
-
-
-
-itemInCart()
-async function itemInCart (){
-
- displayCartItem();
-  
-
- let elementsInCart = document.getElementById("cart__items");
-  for (let product of arrayLocalStorage){ 
-    await fetch (`http://localhost:3000/api/products/${product.id}`)
-   .then(function(res) {
-      if (res.ok) {
-        return res.json();
-      }
-    })
-   .then((kanap) => {
-    product.price = kanap.price; //pour faire entrer kanap.price dans arrayLocalStorage sous forme de product.price
-    let divElement = document.createElement("div");
-    divElement.innerHTML +=
-      `<article class="cart__item" data-id="${product.id}" data-color="${product.color}">
-    <div class="cart__item__img">
-    <img src="${kanap.imageUrl}" alt="${kanap.altTxt}">
-               </div>
-               <div class="cart__item__content">
-                 <div class="cart__item__content__description">
-                   <h2>${kanap.name}</h2>
-                   <p>${product.color}</p>
-                   <p>${kanap.price}</p>
-                 </div>
-                 <div class="cart__item__content__settings">
-                   <div class="cart__item__content__settings__quantity">
-                     <p>Qté : </p>
-                     <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.qty}">
-                   </div>
-                   <div class="cart__item__content__settings__delete">
-                     <p class="deleteItem">Supprimer</p>
-                   </div>
-                 </div>
-               </div>
-               </article>`;
-    elementsInCart.appendChild(divElement);
-
-    let el = divElement.querySelector(".cart__item")
-    let canapId = el.dataset.id;
-    let canapColor = el.dataset.color;
-
-    let input = divElement.querySelector(".itemQuantity");
-
-     let updateQuantity = input.addEventListener("change", (e)=> {
-      e.preventDefault();
-      let newValue = divElement.querySelector(".itemQuantity").value;
-      console.log(newValue);
-      let itemToUpdate = arrayLocalStorage.find(product => product.id === canapId && product.color === canapColor);
-      console.log(itemToUpdate);
-      itemToUpdate.qty = Number(newValue);
-     
-      let ItemToSave = JSON.stringify(itemToUpdate)
-      console.log(ItemToSave);
-      localStorage.setItem("listCouch",ItemToSave);
-      displayCartItem();
-     
-      // arrayLocalStorage = JSON.parse(localStorage.getItem("listCouch"));
-      // console.log(arrayLocalStorage);
-      
-      
-      
-      // let test = arrayLocalStorage.find(product => product.id === canapId && product.color === canapColor);
-      // test.qty = newValue
-     //  doubler la ligne 127, modifier l'arraylocalstorage (qty) et localStorage
-    //  console.log(localStorage);
-    //  console.log(arrayLocalStorage);
-     //  console.log(itemToUpdate);
-      
-       // for (let item of arrayLocalStorage){
-       //   if (item.qty !== newValue){
-       //    item.qty = newValue
-        
-         //  let finalQuantity = document.getElementById("totalQuantity");
-         //  finalQuantity.innerHTML = newValue
-       //   }
-       // }
-      //  localStorage.setItem("listCouch",JSON.stringify(test));
-       displayCartItem();
-     })
-   
-     
- 
-    let deleteBtn = divElement.querySelector(".deleteItem");
-    deleteBtn.addEventListener("click", (e) => {
-       e.preventDefault;
-       el.remove();
-       arrayLocalStorage = arrayLocalStorage.filter(item => item.color !== el.dataset.color);
-       localStorage.setItem("listCouch", JSON.stringify(arrayLocalStorage))
-       displayCartItem();
-      
-    });
-    displayCartItem();
-
-
-  })
-}  
-     
-     
-     
+   }
+    let finalPrice = document.getElementById("totalPrice");
+    finalPrice.innerHTML = totalPrice
 }
 
+function ModificationQuantity () {
+  let input = document.querySelector(".itemQuantity");
+    let updateQuantity = input.addEventListener("change", (e)=> {
+        e.preventDefault();
+        let newValue = document.querySelector(".itemQuantity").value;
+        console.log(newValue);
+        let itemToUpdate = arrayProducts.find(product => product.id === canapId && product.color === canapColor);
+        let temp = JSON.parse(localStorage.getItem("listCouch"));
+        let test6 = temp.find(product => product.id === canapId && product.color === canapColor);
+
+        
+
+        console.log(itemToUpdate);
+        itemToUpdate.qty = Number(newValue);
+        test6.qty = Number(newValue);
+        localStorage.setItem("listCouch",JSON.stringify(temp));
+        totalQuantityAndPrice();
+      })
+}
+
+function DeleteProduct (){
+  let deleteBtn = divElement.querySelector(".deleteItem");
+  deleteBtn.addEventListener("click", (e) => {
+    e.preventDefault;
+    let article = divElement.querySelector(".cart__item");
+    article.remove();
+    arrayLocalStorage.filter(item => item.color !== el.dataset.color);
+    localStorage.setItem("listCouch", JSON.stringify(arrayLocalStorage))  
+  });
+}
+
+
+
+
+ 
+ displayCartItem()
+ async function displayCartItem (){
+
+  // totalQuantityAndPrice ();
+  
+ let elementsInCart = document.getElementById("cart__items");
+ for (let product of arrayProducts){ 
+    await fetch (`http://localhost:3000/api/products/${product.id}`)
+      .then(function(res) {
+            if (res.ok) {
+              return res.json();
+            }
+          })
+        .then((kanap) => {
+          product.price = kanap.price; 
+          let divElement = document.createElement("div");
+          divElement.innerHTML +=
+            `<article class="cart__item" data-id="${product.id}" data-color="${product.color}">
+          <div class="cart__item__img">
+          <img src="${kanap.imageUrl}" alt="${kanap.altTxt}">
+                    </div>
+                    <div class="cart__item__content">
+                      <div class="cart__item__content__description">
+                        <h2>${kanap.name}</h2>
+                        <p>${product.color}</p>
+                        <p>${kanap.price}</p>
+                      </div>
+                      <div class="cart__item__content__settings">
+                        <div class="cart__item__content__settings__quantity">
+                          <p>Qté : </p>
+                          <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.qty}">
+                        </div>
+                        <div class="cart__item__content__settings__delete">
+                          <p class="deleteItem">Supprimer</p>
+                        </div>
+                      </div>
+                    </div>
+                    </article>`;
+                    elementsInCart.appendChild(divElement);
+                    ModificationQuantity(divElement);
+                    });
+  }  
+ totalQuantityAndPrice ();
+ 
+
+ }
    
 //-----------------------------PARTIE DONNEES UTILISATEUR POUR LE FORMULAIRE------------------------------------
 function textControl(text){
@@ -234,7 +175,7 @@ return false;
         
         
         let tabIdCouch = []
-        for(let test of arrayLocalStorage){
+        for(let test of arrayProducts){
           tabIdCouch.push(test.id)
           console.log(test)
         }
