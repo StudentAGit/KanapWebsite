@@ -17,6 +17,16 @@ function addToCart(cart,item){  //item c'est un nouveau truc et element c'est un
   return cart // met fin à la fonction et retourne le nouveau tableau = (mise à jour du panier)
 }
 
+function addToStorage (id, userChoiceOption, qtyProduct) {
+  let cartProducts = []
+  if (localStorage.getItem("listCouch")!== null) { //(!== -> "différent de") si y'a déjà quelque chose dans localstorage
+    cartProducts = JSON.parse(localStorage.getItem("listCouch")) //convertit du JSON en javascript
+  } 
+    cartProducts = addToCart(cartProducts,{id:id,color:userChoiceOption,qty:parseInt(qtyProduct)})
+    localStorage.setItem("listCouch",JSON.stringify(cartProducts)) //convertit une valeur javascript en chaine JSON.
+
+}
+
 fetch ("http://localhost:3000/api/products/"+id)
 .then(function(res) {
     if (res.ok) {
@@ -26,6 +36,7 @@ fetch ("http://localhost:3000/api/products/"+id)
 
 .then(function(eachProducts) {
  console.log(eachProducts)
+ 
 
   let productImage = document.getElementsByClassName("item__img")[0];
   productImage.innerHTML = `<img src="${eachProducts.imageUrl}" alt="${eachProducts.altTxt}">`;
@@ -46,54 +57,49 @@ fetch ("http://localhost:3000/api/products/"+id)
    //(La propriété length du tableau permet de connaître le nombre d'arguments du tableau = 
    //sa longueur correspondant au nombre d'arguments donnés.)
  }
-})         
 
-//récupérer les données pour les envoyer dans le local storage (on le voit avec les console.log) 
- //avec addEventListener au clique du bouton  "ajouter au panier" 
  let btnSendToCart = document.querySelector("button");
 
- btnSendToCart.addEventListener("click", () =>{ 
+    btnSendToCart.addEventListener("click", () =>{ 
+      
+      let idOfProduct = id
+    
+      let qtyProduct = document.getElementById("quantity").value
   
- let idOfProduct = id
- console.log(idOfProduct);
- 
- let qtyProduct = document.getElementById("quantity").value;
- console.log(qtyProduct);
+      let colorSelected = document.getElementById("colors")
+      let userChoiceOption = colorSelected.value; 
 
- let colorSelected = document.getElementById("colors");
- let userChoiceOption = colorSelected.value; //Mettre le choix de l'utilisateur dans une variable
- console.log(userChoiceOption)
+      if (userChoiceOption === ""){
+        alert("Veuillez choisir une couleur")
+      }
+
+      if (qtyProduct >= 1 || qtyProduct <= 100){
+        addToStorage(id, userChoiceOption, qtyProduct)
+      }
+      else{
+        alert("Veuillez choisir une quantité comprise entre 1 et 100")
+      }
+    
+    })  
+})       
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  
-  if (qtyProduct <= 100 && qtyProduct >0){
-    let arrayProducts = []
-    if (localStorage.getItem("listCouch")!== null) { //(!== -> "différent de") si y'a déjà quelque chose dans localstorage
-      arrayProducts = JSON.parse(localStorage.getItem("listCouch")) //convertit du JSON en javascript
-    } 
-      arrayProducts = addToCart(arrayProducts,{id:id,color:userChoiceOption,qty:parseInt(qtyProduct)})
-      localStorage.setItem("listCouch",JSON.stringify(arrayProducts)) //convertit une valeur javascript en chaine JSON.
-  } else {
-   alert ("Veuillez choisir une quantité comprise entre 1 et 100")
-  }
+
+
   
-
-
- })
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-   
 
    
    
