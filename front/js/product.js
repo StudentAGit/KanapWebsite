@@ -1,29 +1,28 @@
 let params = (new URL(document.location)).searchParams;
 let id = params.get('id');
 
-// va permettre de rajouter dans le panier sans écrasement et sans multiplication du meme article (avec une function )
-function addToCart(cart,item){  //item c'est un nouveau truc et element c'est un truc déja présent
+function addToCart(cart,item){  
   console.log(item,cart) 
-  let foundSomething = false //varaiable crée s'il y a rien dans le panier (rien trouvé dans le panier) donnée boléenne
-  for (let element of cart){ // pour tous les éléments du panier
-    if (item.id === element.id && item.color === element.color ){ //===->"identique"
+  let foundSomething = false 
+  for (let element of cart){ 
+    if (item.id === element.id && item.color === element.color ){
       element.qty += item.qty
       foundSomething = true
     }
   }
-  if (foundSomething === false) { // (!foundSomething) s'il n'y avait jamais rien eu dans le panier
-    cart.push(item) //item (nouvel objet) se rajoute au panier
+  if (foundSomething === false) { 
+    cart.push(item) 
   }
-  return cart // met fin à la fonction et retourne le nouveau tableau = (mise à jour du panier)
+  return cart 
 }
 
 function addToStorage (id, userChoiceOption, qtyProduct) {
   let cartProducts = []
-  if (localStorage.getItem("listCouch")!== null) { //(!== -> "différent de") si y'a déjà quelque chose dans localstorage
-    cartProducts = JSON.parse(localStorage.getItem("listCouch")) //convertit du JSON en javascript
+  if (localStorage.getItem("listCouch")!== null) { 
+    cartProducts = JSON.parse(localStorage.getItem("listCouch")) 
   } 
     cartProducts = addToCart(cartProducts,{id:id,color:userChoiceOption,qty:parseInt(qtyProduct)})
-    localStorage.setItem("listCouch",JSON.stringify(cartProducts)) //convertit une valeur javascript en chaine JSON.
+    localStorage.setItem("listCouch",JSON.stringify(cartProducts)) 
 
 }
 
@@ -52,14 +51,11 @@ fetch ("http://localhost:3000/api/products/"+id)
   productDescription.innerHTML = `<p id="description">${eachProducts.description}</p>`
 
   let productColor = document.getElementById("colors");
-     for (let i = 0; i < eachProducts.colors.length; i++){
-   productColor.innerHTML +=`<option value="${eachProducts.colors[i]}">${eachProducts.colors[i]}</option>`
-   //(La propriété length du tableau permet de connaître le nombre d'arguments du tableau = 
-   //sa longueur correspondant au nombre d'arguments donnés.)
- }
+  for (let i = 0; i < eachProducts.colors.length; i++){
+    productColor.innerHTML +=`<option value="${eachProducts.colors[i]}">${eachProducts.colors[i]}</option>`
+  }
 
  let btnSendToCart = document.querySelector("button");
-
     btnSendToCart.addEventListener("click", () =>{ 
       
       let idOfProduct = id
@@ -83,24 +79,3 @@ fetch ("http://localhost:3000/api/products/"+id)
     })  
 })       
 
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-  
-
-   
-   
-  

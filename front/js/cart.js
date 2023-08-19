@@ -6,7 +6,6 @@ if (localStorage.getItem("listCouch")!== null) {
   totalQuantityAndPrice ();
 }
 
-
 function totalQuantityAndPrice(){
   let numberTotalOfCart = [];
   for (let item of cartProducts){
@@ -98,16 +97,14 @@ async function displayCartItem (){
                              }
                             if (localStorage.getItem("listCouch")!== null) {
                               let storage = JSON.parse(localStorage.getItem("listCouch"))
-                              console.log(storage) 
+                               
                               let inStorage = storage.find(item => item.id === canapId && item.color === canapColor);
-                              console.log(inStorage)
                               let itemToUpdate = cartProducts.find(product => product.id === canapId && product.color === canapColor);
                               console.log(itemToUpdate);
                               itemToUpdate.qty = Number(newValue);
                               inStorage.qty = Number(newValue);
                               let replaceOldValueStorage = storage.filter(product => product.qty !== newValue)
                               let replaceOldValueCart = cartProducts.filter(product => product.qty !== newValue)
-                              console.log("test1", replaceOldValueCart, replaceOldValueStorage);
                               cartProducts = replaceOldValueCart
                               inStorage = replaceOldValueStorage
                               localStorage.setItem("listCouch",JSON.stringify(inStorage))
@@ -139,8 +136,7 @@ function addressControl(theAddress){
     return true;
   }
   else {
-    // alert("FAUX")
-    console.log(theAddress)
+     alert("Adresse non valide")
   return false;
   }
 }
@@ -152,7 +148,6 @@ function emailControl(theEmail){
   }
   else {
   alert("Adresse email invalide")
-  console.log(theEmail)
   return false;
   }
 }
@@ -169,7 +164,6 @@ function emailControl(theEmail){
      email: document.querySelector("#email").value
     }
 
-     //si le formulaire est bon, alors autorisation de mise du formulaire dans le local storage
      if (textControl(userinformations.firstName) === true && textControl(userinformations.lastName) === true && textControl(userinformations.city) === true && addressControl(userinformations.address) === true && 
         emailControl(userinformations.email) === true){
         localStorage.setItem("userinformations", JSON.stringify(userinformations))

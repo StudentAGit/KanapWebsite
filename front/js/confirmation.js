@@ -4,9 +4,3 @@ console.log(orderId);
 
 let displayTheOrder = document.getElementById('orderId');
 displayTheOrder.innerHTML = orderId
-
-
-
-  
-
-  
