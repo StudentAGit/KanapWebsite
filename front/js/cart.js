@@ -1,3 +1,4 @@
+// Récupération du local storage grâce à l'array des produits "cartProducts"
 let cartProducts = [];
 
 if (localStorage.getItem("listCouch")!== null) {
@@ -6,6 +7,7 @@ if (localStorage.getItem("listCouch")!== null) {
   totalQuantityAndPrice ();
 }
 
+// Fonction pour le calcul de la quantité et du prix final de la commande à chaque modification du local storage
 function totalQuantityAndPrice(){
   let numberTotalOfCart = [];
   for (let item of cartProducts){
@@ -32,6 +34,7 @@ function totalQuantityAndPrice(){
   finalPrice.innerHTML = totalPrice
 }
 
+//Fonction permettant l'affichage des éléments du local storage
 displayCartItem()
 async function displayCartItem (){
 
@@ -44,6 +47,7 @@ async function displayCartItem (){
             }
           })
         .then((kanap) => {
+          console.log(kanap)
            product.price = kanap.price; 
           let article = document.createElement("article");
           article.innerHTML +=
@@ -75,7 +79,7 @@ async function displayCartItem (){
                       let canapId = el.dataset.id;
                       let canapColor = el.dataset.color;
 
-                     
+                     // Partie permettant la suppresion des articles
                           let deleteBtn = article.querySelector(".deleteItem");
                           deleteBtn.addEventListener("click", (e) => {
                           e.preventDefault;
@@ -87,6 +91,7 @@ async function displayCartItem (){
                     
                           totalQuantityAndPrice ();
                     
+                          //Partie permettant la modification de la quantité
                           let input = article.querySelector(".itemQuantity");
                            input.addEventListener("change", (e)=> {
                              e.preventDefault();
@@ -118,6 +123,7 @@ async function displayCartItem (){
     
 
 //-----------------------------PARTIE DONNEES UTILISATEUR POUR LE FORMULAIRE------------------------------------
+//3 fonctions pour le contôle des champs du formulaire
 function textControl(text){
   
   if (/^[A-Z-a-zàâçéèêëîïôûùüÿñæœ .-]*$/.test(text)){
@@ -152,6 +158,7 @@ function emailControl(theEmail){
   }
 }
 
+// ENVOIE DES DONNEES AU SERVEUR
   const btnOrder = document.querySelector(".cart__order__form");
    
   btnOrder.addEventListener("submit", (e)=> {
@@ -180,6 +187,8 @@ function emailControl(theEmail){
           products: tabIdCouch,
           contact : userinformations
         }
+
+        //Requête avec la méthode POST pour l'envoi des données au serveur
     
         const methodPost = fetch("http://localhost:3000/api/products/order", {
          method : "POST",
